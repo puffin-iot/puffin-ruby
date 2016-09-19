@@ -1,5 +1,6 @@
 module Puffin
-  class APIResource
+  class APIResource < PuffinObject
+    include Puffin::APIOperations::Request
 
     def self.class_name
       self.name.split('::')[-1]

@@ -15,18 +15,46 @@ require 'puffin/api_operations/create'
 require 'puffin/api_operations/save'
 require 'puffin/api_operations/list'
 require 'puffin/api_operations/request'
+
+require 'puffin/puffin_object'
+require 'puffin/list_object'
 require 'puffin/api_resource'
 require 'puffin/device'
 require 'puffin/version'
 require 'puffin/util'
 
+require 'puffin/errors/puffin_error'
+require 'puffin/errors/authentication_error'
+require 'puffin/errors/connection_error'
+require 'puffin/errors/api_error'
+
 module Puffin
 
-  @api_base = 'https://api.puffin.ly'
+  @api_base = 'https://3b17b11b.ngrok.io'
+  # @api_base = 'https://api.puffin.ly'
   @max_network_retries = 10
   @verify_ssl_certs = true
   @open_timeout = 30
   @read_timeout = 80
+
+  RETRY_EXCEPTIONS = [
+    # Destination refused the connection. This could occur from a single
+    # saturated server, so retry in case it's intermittent.
+    Errno::ECONNREFUSED,
+
+    # Connection reset. This occasionally occurs on a server problem, and
+    # deserves a retry because the server should terminate all requests
+    # properly even if they were invalid.
+    Errno::ECONNRESET,
+
+    # Timed out making the connection. It's worth retrying under this
+    # circumstance.
+    Errno::ETIMEDOUT,
+
+    # Retry on timeout-related problems. This shouldn't be lumped in with HTTP
+    # exceptions, but with RestClient it is.
+    RestClient::RequestTimeout,
+  ].freeze
 
   class << self
     attr_accessor :puffin_account, :verify_ssl_certs, :api_token,
@@ -42,13 +70,14 @@ module Puffin
 
     unless api_token ||= @api_token
       raise AuthenticationError.new('No API key provided. ' \
-        'Set your API token using "Puffing.api_token = <API-TOKEN>". ' \
-        'You generate API keys from the Puffing interface. ')
+        'Set your API token using "Puffin.api_token = [YOUR-API-TOKEN]". ' \
+        'You generate API keys from the Puffing interface. If in double, '\
+        'double check the docs :- docs.puffin.ly')
     end
 
     if api_token =~ /\s/
-      raise AuthenticationError.new('Your API key is invalid, as it contains ' \
-        'whitespace.')
+      raise AuthenticationError.new('Your API token contains whitespace' \
+        'Please check your token again.')
     end
 
     if verify_ssl_certs
@@ -107,6 +136,7 @@ module Puffin
 
     headers['Puffin-Env']     = puffin_env if puffin_env
     headers['Puffin-Account'] = puffin_account if puffin_account
+    headers['AuthToken']      = api_token if api_token
 
     begin
       headers.update('X-Puffin-Client-User-Agent' => JSON.generate(user_agent))
@@ -207,5 +237,98 @@ module Puffin
 
   def self.execute_request(opts)
     RestClient::Request.execute(opts)
+  end
+
+  def self.should_retry?(e, retry_count)
+    retry_count < self.max_network_retries &&
+      RETRY_EXCEPTIONS.any? { |klass| e.is_a?(klass) }
+  end
+
+  def self.handle_api_error(resp)
+    begin
+      error_obj = JSON.parse(resp.body)
+      error_obj = Util.symbolize_names(error_obj)
+      error = error_obj[:error]
+      raise PuffinError.new unless error && error.is_a?(Hash)
+
+    rescue JSON::ParserError, PuffinError
+      raise general_api_error(resp.code, resp.body)
+    end
+
+    case resp.code
+    when 400, 404, 422
+      raise invalid_request_error(error, resp, error_obj)
+    when 401
+      raise authentication_error(error, resp, error_obj)
+    when 429
+      raise rate_limit_error(error, resp, error_obj)
+    else
+      raise api_error(error, resp, error_obj)
+    end
+  end
+
+  def self.invalid_request_error(error, resp, error_obj)
+    InvalidRequestError.new(error[:message], error[:param], resp.code,
+                            resp.body, error_obj, resp.headers)
+  end
+
+  def self.authentication_error(error, resp, error_obj)
+    AuthenticationError.new(error[:message], resp.code, resp.body, error_obj,
+                            resp.headers)
+  end
+
+  def self.rate_limit_error(error, resp, error_obj)
+    RateLimitError.new(error[:message], resp.code, resp.body, error_obj,
+                       resp.headers)
+  end
+
+  def self.api_error(error, resp, error_obj)
+    APIError.new(error[:message], resp.code, resp.body, error_obj, resp.headers)
+  end
+
+  def self.general_api_error(rcode, rbody)
+    APIError.new("Invalid response object from API: #{rbody.inspect} " +
+                 "(HTTP response code was #{rcode})", rcode, rbody)
+  end
+
+  def self.handle_restclient_error(e, request_opts, retry_count, api_base_url=nil)
+
+    api_base_url = @api_base unless api_base_url
+    connection_message = "Please check your internet connection and try again. " \
+      "If this problem persists, you should check the service status."
+
+    case e
+    when RestClient::RequestTimeout
+      message = "Could not connect to Puffin (#{api_base_url}). #{connection_message}"
+
+    when RestClient::ServerBrokeConnection
+      message = "The connection to the server (#{api_base_url}) broke before the " \
+        "request completed. #{connection_message}"
+
+    when OpenSSL::SSL::SSLError
+      message = "Could not establish a secure connection, you may " \
+                "need to upgrade your OpenSSL version. To check, try running " \
+                "'openssl s_client -connect api.puffin.com:443' from the " \
+                "command line."
+
+    when RestClient::SSLCertificateNotVerified
+      message = "Could not verify the SSL certificate. " \
+        "Please make sure that your network is not intercepting certificates."
+
+    when SocketError
+      message = "Unexpected error communicating when trying to connect to Puffin. " \
+        "You may be seeing this message because your DNS is not working. " \
+        "To check, try running 'host stripe.com' from the command line."
+
+    else
+      message = "Unexpected error communicating with Puffin. " \
+        "If this problem persists, let us know at help@puffin.ly."
+    end
+
+    if retry_count > 0
+      message += " Request was retried #{retry_count} times."
+    end
+
+    raise ConnectionError.new(message + "\n\n(Network error: #{e.message})")
   end
 end

@@ -1,10 +1,9 @@
 module Puffin
   module Util
-    ### From Stripe ###
     def self.objects_to_ids(h)
       case h
-      # when APIResource
-      #   h.id
+      when APIResource
+        h.id
       when Hash
         res = {}
         h.each { |k, v| res[k] = objects_to_ids(v) unless v.nil? }
@@ -61,5 +60,21 @@ module Puffin
       end
     end
 
+    def self.normalize_opts(opts)
+      case opts
+      when String
+        { api_token: opts }
+      when Hash
+        check_api_token!(opts.fetch(:api_token)) if opts.has_key?(:api_token)
+        opts.clone
+      else
+        raise TypeError.new('normalize_opts expects a string or a hash')
+      end
+    end
+
+    def self.check_api_token!(token)
+      raise TypeError.new("api_token must be a string") unless token.is_a?(String)
+      token
+    end
   end
 end
