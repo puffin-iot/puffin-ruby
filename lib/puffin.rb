@@ -11,6 +11,12 @@ require 'socket'
 require 'rest-client'
 require 'json'
 
+require 'puffin/api_operations/create'
+require 'puffin/api_operations/save'
+require 'puffin/api_operations/list'
+require 'puffin/api_operations/request'
+require 'puffin/api_resource'
+require 'puffin/device'
 require 'puffin/version'
 require 'puffin/util'
 
