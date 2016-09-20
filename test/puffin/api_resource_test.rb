@@ -37,5 +37,16 @@ module Puffin
       Puffin::Device.fetch({:id => 'dev_123'})
     end
 
+    should "handle error response with non-object error value" do
+      response = make_response('{"error": "foo"}', 500)
+      @mock.expects(:get).once.raises(RestClient::ExceptionWithResponse.new(response, 500))
+
+      e = assert_raises Puffin::APIError do
+        Puffin::Device.fetch "a"
+      end
+
+      assert_equal 'Invalid response object from API: "{\"error\": \"foo\"}" (HTTP response code was 500)', e.message
+    end
+
   end
 end
