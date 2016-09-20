@@ -30,7 +30,7 @@ require 'puffin/errors/api_error'
 
 module Puffin
 
-  @api_base = 'https://3b17b11b.ngrok.io'
+  @api_base = 'https://e2bcd1f0.ngrok.io'
   # @api_base = 'https://api.puffin.ly'
   @max_network_retries = 10
   @verify_ssl_certs = true

@@ -9,7 +9,8 @@ module Puffin
     #   undef :id
     # end
 
-    # def initialize(id=nil, opts={})
+    def initialize(id=nil, opts={})
+      puts 888888888888888888888888888888888888888888888
     #   id, @retrieve_params = Util.normalize_id(id)
     #   @opts = Util.normalize_opts(opts)
     #   @original_values = {}
@@ -19,16 +20,12 @@ module Puffin
     #   @unsaved_values = Set.new
     #   @transient_values = Set.new
     #   @values[:id] = id if id
-    # end
+    end
 
     def self.construct_from(values, opts={})
       values = Puffin::Util.symbolize_names(values)
-      puts 1111111111111111111111111111111
-      puts values
-      puts 11111111111111111111111111111111111
-
       # work around protected #initialize_from for now
-      self.new.send(:initialize_from, values, opts)
+      # self.new.send(:initialize_from, values, opts)
       values
     end
 
@@ -299,32 +296,37 @@ module Puffin
     # # * +:partial:+ Indicates that the re-initialization should not attempt to
     # #   remove accessors.
     def initialize_from(values, opts, partial=false)
-      @opts = Util.normalize_opts(opts)
-      @original_values = Marshal.load(Marshal.dump(values)) # deep copy
 
-      removed = partial ? Set.new : Set.new(@values.keys - values.keys)
-      added = Set.new(values.keys - @values.keys)
+      # puts 1111111111111111111111111111111
+      # puts values, opts
+      # puts 11111111111111111111111111111111111
 
-      # Wipe old state before setting new.  This is useful for e.g. updating a
-      # customer, where there is no persistent card parameter.  Mark those values
-      # which don't persist as transient
+      # @opts = Util.normalize_opts(opts)
+      # @original_values = Marshal.load(Marshal.dump(values)) # deep copy
 
-      instance_eval do
-        remove_accessors(removed)
-        add_accessors(added, values)
-      end
+      # removed = partial ? Set.new : Set.new(@values.keys - values.keys)
+      # added = Set.new(values.keys - @values.keys)
 
-      removed.each do |k|
-        @values.delete(k)
-        @transient_values.add(k)
-        @unsaved_values.delete(k)
-      end
+      # # Wipe old state before setting new.  This is useful for e.g. updating a
+      # # customer, where there is no persistent card parameter.  Mark those values
+      # # which don't persist as transient
 
-      update_attributes(values, opts, :dirty => false)
-      values.each do |k, _|
-        @transient_values.delete(k)
-        @unsaved_values.delete(k)
-      end
+      # instance_eval do
+      #   remove_accessors(removed)
+      #   add_accessors(added, values)
+      # end
+
+      # removed.each do |k|
+      #   @values.delete(k)
+      #   @transient_values.add(k)
+      #   @unsaved_values.delete(k)
+      # end
+
+      # update_attributes(values, opts, :dirty => false)
+      # values.each do |k, _|
+      #   @transient_values.delete(k)
+      #   @unsaved_values.delete(k)
+      # end
 
       self
     end

@@ -46,16 +46,16 @@ module Puffin
     # Note that this method will make as many API calls as necessary to fetch
     # all resources. For more granular control, please see +each+ and
     # +next_page+.
-    def auto_paging_each(&blk)
-      return enum_for(:auto_paging_each) unless block_given?
+    # def auto_paging_each(&blk)
+    #   return enum_for(:auto_paging_each) unless block_given?
 
-      page = self
-      loop do
-        page.each(&blk)
-        page = page.next_page
-        break if page.empty?
-      end
-    end
+    #   page = self
+    #   loop do
+    #     page.each(&blk)
+    #     page = page.next_page
+    #     break if page.empty?
+    #   end
+    # end
 
     # Returns true if the page object contains no elements.
     def empty?
@@ -65,6 +65,7 @@ module Puffin
     def retrieve(id, opts={})
       id, retrieve_params = Util.normalize_id(id)
       response, opts = request(:get,"#{resource_url}/#{CGI.escape(id)}", retrieve_params, opts)
+      puts 888888888888888888888888888888888888888888888888888888888
       Util.convert_to_stripe_object(response, opts)
     end
 
