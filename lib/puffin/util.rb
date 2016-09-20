@@ -15,6 +15,14 @@ module Puffin
       end
     end
 
+    def self.url_encode(key)
+      CGI.escape(key.to_s).
+        # Don't use strict form encoding by changing the square bracket control
+        # characters back to their literals. This is fine by the server, and
+        # makes these parameter strings easier to read.
+        gsub('%5B', '[').gsub('%5D', ']')
+    end
+
     # Encodes a hash of parameters in a way that's suitable for use as query
     # parameters in a URI or as form parameters in a request body. This mainly
     # involves escaping special characters from parameter keys and values (e.g.
@@ -72,9 +80,37 @@ module Puffin
       end
     end
 
+    def self.normalize_id(id)
+      if id.kind_of?(Hash) # overloaded id
+        params_hash = id.dup
+        id = params_hash.delete(:id)
+      else
+        params_hash = {}
+      end
+      [id, params_hash]
+    end
+
+    def self.convert_to_puffin_object(resp, opts)
+      case resp
+      when Array
+        resp.map { |i| convert_to_puffin_object(i, opts) }
+      when Hash
+        object_classes.fetch(resp[:object], PuffinObject).construct_from(resp, opts)
+      else
+        resp
+      end
+    end
+
     def self.check_api_token!(token)
       raise TypeError.new("api_token must be a string") unless token.is_a?(String)
       token
+    end
+
+    def self.object_classes
+      @object_classes ||= {
+        'list' => ListObject,
+        'device' => Device,
+      }
     end
   end
 end

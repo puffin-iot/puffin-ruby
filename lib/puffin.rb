@@ -2,11 +2,11 @@
 # View api docs here: api-docs.puffin.ly
 # Much of the connection logic was borrowed from Stripe's Ruby client
 # because it's excellent and fitted our needs nicely with few adaptions
-require 'cgi'
-require 'openssl'
-require 'rbconfig'
+# require 'cgi'
+# require 'openssl'
+# require 'rbconfig'
 require 'set'
-require 'socket'
+# require 'socket'
 
 require 'rest-client'
 require 'json'
@@ -30,7 +30,7 @@ require 'puffin/errors/api_error'
 
 module Puffin
 
-  @api_base = 'https://e2bcd1f0.ngrok.io'
+  @api_base = 'https://65f10efa.ngrok.io'
   # @api_base = 'https://api.puffin.ly'
   @max_network_retries = 10
   @verify_ssl_certs = true
@@ -58,7 +58,7 @@ module Puffin
 
   class << self
     attr_accessor :puffin_account, :verify_ssl_certs, :api_token,
-                  :open_timeout, :read_timeout, :puffin_env
+                  :open_timeout, :read_timeout, :puffin_env, :api_base
   end
 
   def self.api_url(url='', api_base_url=nil)

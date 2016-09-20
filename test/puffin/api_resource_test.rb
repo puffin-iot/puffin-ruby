@@ -24,12 +24,17 @@ module Puffin
 
     should "return an array of objects" do
       response = make_response(make_device_array)
-      puts 11111111111111111111111111111111111111111111111
-      puts response.inspect
-      puts 11111111111111111111111111111
-      @mock.expects(:get).with("#{Stripe.api_base}/v1/charges?customer=test+customer", nil, nil).returns(response)
-      # charges = Stripe::Charge.list(:customer => 'test customer').data
-      # assert charges.kind_of? Array
+      @mock.expects(:get).with("#{Puffin.api_base}/v1/devices", nil, nil).returns(response)
+      devices = Puffin::Device.list.data
+      assert devices.kind_of? Array
+    end
+
+    should "fetch a customer" do
+      @mock.expects(:get).once.
+        with("#{Puffin.api_base}/v1/devices/dev_123", nil, nil).
+        returns(make_response(make_device))
+
+      Puffin::Device.fetch({:id => 'dev_123'})
     end
 
   end

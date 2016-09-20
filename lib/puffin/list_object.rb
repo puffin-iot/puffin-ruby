@@ -13,23 +13,23 @@ module Puffin
     # An empty list object. This is returned from +next+ when we know that
     # there isn't a next page in order to replicate the behavior of the API
     # when it attempts to return a page beyond the last.
-    def self.empty_list(opts={})
-      ListObject.construct_from({ :data => [] }, opts)
-    end
+    # def self.empty_list(opts={})
+    #   ListObject.construct_from({ :data => [] }, opts)
+    # end
 
     def initialize(*args)
       super
       self.filters = {}
     end
 
-    def [](k)
-      case k
-      when String, Symbol
-        super
-      else
-        raise ArgumentError.new("You tried to access the #{k.inspect} index, but ListObject types only support String keys. (HINT: List calls return an object with a 'data' (which is the data array). You likely want to call #data[#{k.inspect}])")
-      end
-    end
+    # def [](k)
+    #   case k
+    #   when String, Symbol
+    #     super
+    #   else
+    #     raise ArgumentError.new("You tried to access the #{k.inspect} index, but ListObject types only support String keys. (HINT: List calls return an object with a 'data' (which is the data array). You likely want to call #data[#{k.inspect}])")
+    #   end
+    # end
 
     # Iterates through each resource in the page represented by the current
     # `ListObject`.
@@ -65,7 +65,6 @@ module Puffin
     def retrieve(id, opts={})
       id, retrieve_params = Util.normalize_id(id)
       response, opts = request(:get,"#{resource_url}/#{CGI.escape(id)}", retrieve_params, opts)
-      puts 888888888888888888888888888888888888888888888888888888888
       Util.convert_to_stripe_object(response, opts)
     end
 
@@ -73,30 +72,30 @@ module Puffin
     #
     # This method will try to respect the limit of the current page. If none
     # was given, the default limit will be fetched again.
-    def next_page(params={}, opts={})
-      return self.class.empty_list(opts) if !has_more
-      last_id = data.last.id
+    # def next_page(params={}, opts={})
+    #   return self.class.empty_list(opts) if !has_more
+    #   last_id = data.last.id
 
-      params = filters.merge({
-        :starting_after => last_id,
-      }).merge(params)
+    #   params = filters.merge({
+    #     :starting_after => last_id,
+    #   }).merge(params)
 
-      list(params, opts)
-    end
+    #   list(params, opts)
+    # end
 
     # Fetches the previous page in the resource list (if there is one).
     #
     # This method will try to respect the limit of the current page. If none
     # was given, the default limit will be fetched again.
-    def previous_page(params={}, opts={})
-      first_id = data.first.id
+    # def previous_page(params={}, opts={})
+    #   first_id = data.first.id
 
-      params = filters.merge({
-        :ending_before => first_id,
-      }).merge(params)
+    #   params = filters.merge({
+    #     :ending_before => first_id,
+    #   }).merge(params)
 
-      list(params, opts)
-    end
+    #   list(params, opts)
+    # end
 
     def resource_url
       self.url ||
