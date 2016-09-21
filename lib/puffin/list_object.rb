@@ -1,3 +1,5 @@
+# Much of this logic was derived from Stripe's ruby client and can be
+# removed. It was used as a learning experiment when building this gem.
 module Puffin
   class ListObject < PuffinObject
     include Enumerable
