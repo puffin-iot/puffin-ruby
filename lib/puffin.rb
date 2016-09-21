@@ -30,7 +30,7 @@ require 'puffin/errors/api_error'
 
 module Puffin
 
-  @api_base = 'https://65f10efa.ngrok.io'
+  @api_base = 'https://e83789d7.ngrok.io'
   # @api_base = 'https://api.puffin.ly'
   @max_network_retries = 10
   @verify_ssl_certs = true
@@ -129,14 +129,14 @@ module Puffin
 
   def self.request_headers(api_token, method)
     headers = {
-      'User-Agent' => "Puffin/v1 RubyBindings/#{Puffin::VERSION}",
+      'User-Agent' => "Puffin/v1 Ruby/#{Puffin::VERSION}",
       'Authorization' => "Bearer #{api_token}",
       'Content-Type' => 'application/x-www-form-urlencoded'
     }
 
     headers['Puffin-Env']     = puffin_env if puffin_env
     headers['Puffin-Account'] = puffin_account if puffin_account
-    headers['AuthToken']      = api_token if api_token
+    # headers['AuthToken']      = api_token if api_token
 
     begin
       headers.update('X-Puffin-Client-User-Agent' => JSON.generate(user_agent))

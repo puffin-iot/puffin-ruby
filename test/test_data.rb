@@ -1,17 +1,17 @@
-# Some of this helper logic came from Stripe's ruby client test
+# Some of this helper logic came from puffin's ruby client test
 module Puffin
   module TestData
     def make_response(body, code=200)
       body = JSON.generate(body) if !(body.kind_of? String)
       m = mock
-      m.instance_variable_set('@stripe_values', {
+      m.instance_variable_set('@puffin_values', {
         :body => body,
         :code => code,
         :headers => {},
       })
-      def m.body; @stripe_values[:body]; end
-      def m.code; @stripe_values[:code]; end
-      def m.headers; @stripe_values[:headers]; end
+      def m.body; @puffin_values[:body]; end
+      def m.code; @puffin_values[:code]; end
+      def m.headers; @puffin_values[:headers]; end
       m
     end
 
@@ -21,7 +21,7 @@ module Puffin
       }.merge(params)
     end
 
-    def mac
+    def generate_mac
       (1..6).map{"%0.2X"%rand(256)}.join("-")
     end
 
@@ -29,12 +29,13 @@ module Puffin
       id = params[:id] || '123'
       {
         id: id,
-        mac: mac,
+        mac: generate_mac,
         description: 'My Fab Device',
         network_id: 1,
         project_id: 2,
         private_token: SecureRandom.hex,
         public_token: SecureRandom.hex,
+        object: 'device',
         sync_user: SecureRandom.hex(5),
         sync_pass: SecureRandom.hex(5),
         sync_topic: SecureRandom.hex(5),

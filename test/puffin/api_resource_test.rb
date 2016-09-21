@@ -29,7 +29,7 @@ module Puffin
       assert devices.kind_of? Array
     end
 
-    should "fetch a customer" do
+    should "fetch a device" do
       @mock.expects(:get).once.
         with("#{Puffin.api_base}/v1/devices/dev_123", nil, nil).
         returns(make_response(make_device))
@@ -48,5 +48,19 @@ module Puffin
       assert_equal 'Invalid response object from API: "{\"error\": \"foo\"}" (HTTP response code was 500)', e.message
     end
 
+    # should "create a device" do
+
+    #   Puffin.expects(:execute_request).with do |opts|
+    #     opts[:headers]['Authorization'] == 'Bearer local'
+    #   end.returns(make_response(make_device))
+
+    #   Puffin::Device.create({
+    #     device: {
+    #       mac: generate_mac,
+    #       network_id: 123,
+    #       description: 'My great device'
+    #     }
+    #   })
+    # end
   end
 end
