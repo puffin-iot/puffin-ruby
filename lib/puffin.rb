@@ -21,6 +21,7 @@ require 'puffin/puffin_object'
 require 'puffin/list_object'
 require 'puffin/api_resource'
 require 'puffin/device'
+require 'puffin/operation'
 require 'puffin/version'
 require 'puffin/util'
 
@@ -31,7 +32,7 @@ require 'puffin/errors/api_error'
 
 module Puffin
 
-  @api_base = 'https://e83789d7.ngrok.io'
+  @api_base = 'https://9f8611d5.ngrok.io'
   # @api_base = 'https://api.puffin.ly'
   @max_network_retries = 10
   @verify_ssl_certs = true
@@ -83,14 +84,12 @@ module Puffin
 
     if verify_ssl_certs
       request_opts = { verify_ssl: OpenSSL::SSL::VERIFY_PEER }
-      # request_opts = {:verify_ssl => OpenSSL::SSL::VERIFY_PEER,
-      #                 :ssl_cert_store => ca_store}
     else
       request_opts = {:verify_ssl => false}
       unless @verify_ssl_warned
         @verify_ssl_warned = true
-        $stderr.puts("WARNING: Running without SSL cert verification. " \
-          "You should never do this in production. " \
+        $stderr.puts("WARNING: Running without SSL cert verification is not cool. " \
+          "You should never do this in production!!" \
           "Execute 'Puffin.verify_ssl_certs = true' to enable verification.")
       end
     end
@@ -134,10 +133,7 @@ module Puffin
       'Authorization' => "Bearer #{api_token}",
       'Content-Type' => 'application/x-www-form-urlencoded'
     }
-
     headers['Puffin-Env']     = puffin_env if puffin_env
-    headers['Puffin-Account'] = puffin_account if puffin_account
-    # headers['AuthToken']      = api_token if api_token
 
     begin
       headers.update('X-Puffin-Client-User-Agent' => JSON.generate(user_agent))

@@ -7,16 +7,16 @@ module Puffin
     end
 
     def self.resource_url
-      # if self == APIResource
-      #   raise NotImplementedError.new('APIResource is an abstract class.  You should perform actions on its subclasses (Charge, Customer, etc.)')
-      # end
+      if self == APIResource
+        raise NotImplementedError.new('APIResource is an abstract class.  You should perform actions on its subclasses (Charge, Customer, etc.)')
+      end
       "/v1/#{CGI.escape(class_name.downcase)}s"
     end
 
     def resource_url
-      # unless id = self['id']
-      #   raise InvalidRequestError.new("Could not determine which URL to request: #{self.class} instance has invalid ID: #{id.inspect}", 'id')
-      # end
+      unless id = self['id']
+        raise InvalidRequestError.new("Could not determine which URL to request: #{self.class} instance has invalid ID: #{id.inspect}", 'id')
+      end
       # "#{self.class.resource_url}/#{CGI.escape(id)}"
       "#{self.class.resource_url}/#{id}"
     end

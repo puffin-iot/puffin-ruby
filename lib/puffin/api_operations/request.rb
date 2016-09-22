@@ -2,7 +2,7 @@ module Puffin
   module APIOperations
     module Request
       module ClassMethods
-        OPTS_KEYS_TO_PERSIST = Set[:api_token, :api_base, :puffin_account]
+        OPTS_KEYS_TO_PERSIST = Set[:api_token, :api_base]
 
         def request(method, url, params={}, opts={})
           opts = Util.normalize_opts(opts)

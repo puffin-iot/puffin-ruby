@@ -110,6 +110,7 @@ module Puffin
       @object_classes ||= {
         'list' => ListObject,
         'device' => Device,
+        'operation' => Operation
       }
     end
   end

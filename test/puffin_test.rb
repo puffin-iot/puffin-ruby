@@ -12,16 +12,20 @@ class PuffinTest < Test::Unit::TestCase
     end
   end
 
-  should "makes requests with the Puffin-Account header" do
-    response = make_account(
-      email: "test@puffin.ly"
-    )
-    Puffin.puffin_account = 'auks_1234'
+  should "makes requests with the default Auth Bearer header" do
+    Puffin.expects(:execute_request).with do |opts|
+      opts[:headers]['Authorization'] == 'Bearer foo'
+    end.returns(make_response(make_device))
 
-    Puffin.expects(:execute_request).with(
-      has_entry(:headers, has_entry('Puffin-Account', 'auks_1234')),
-    ).returns(make_response(response))
+    Puffin::Device.create()
+  end
 
-    Puffin.request(:post, '/v1/account', 'sk_live12334566')
+  should "makes requests with the customer Bearer header" do
+    Puffin.api_token = "token"
+    Puffin.expects(:execute_request).with do |opts|
+      opts[:headers]['Authorization'] == 'Bearer token'
+    end.returns(make_response(make_device))
+
+    Puffin::Device.create()
   end
 end

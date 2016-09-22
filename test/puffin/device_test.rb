@@ -44,11 +44,21 @@ module Puffin
       assert_equal "123", c.id
 
       @mock.expects(:patch).once.
-        with("https://e83789d7.ngrok.io/v1/devices/1", nil, "metadata[foo]=bar").
+        with("#{Puffin.api_base}/v1/devices/1", nil, "metadata[foo]=bar").
         returns(make_response(make_device(metadata: {foo: 'bar'})))
       c = Puffin::Device.update("1", metadata: {foo: 'bar'})
       assert_equal('bar', c.metadata['foo'])
     end
 
+    should "reset a device" do
+      data = make_device
+      d = Puffin::Device.construct_from(make_device)
+      @mock.expects(:get).never
+      @mock.expects(:post).once.
+        with("#{Puffin.api_base}/v1/devices/#{d.id}/reset", nil, '').
+        returns(make_response(data))
+      d = d.reset
+      assert d.is_a?(Puffin::Device)
+    end
   end
 end

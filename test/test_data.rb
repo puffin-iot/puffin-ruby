@@ -55,5 +55,22 @@ module Puffin
         :resource_url => '/v1/devices'
       }
     end
+
+    def make_operation(params={})
+      id = params[:id] || '123'
+      {
+        id: id,
+        object: 'operation',
+        status: 'DONE'
+      }.merge(params)
+    end
+
+    def make_operation_array
+      {
+        :data => [make_operation, make_operation],
+        :object => 'operation',
+        :resource_url => '/v1/operations'
+      }
+    end
   end
 end
