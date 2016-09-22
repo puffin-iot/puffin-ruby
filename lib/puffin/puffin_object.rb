@@ -25,7 +25,6 @@ module Puffin
 
     def self.construct_from(values, opts={})
       values = Puffin::Util.symbolize_names(values)
-      puts values
 
       # work around protected #initialize_from for now
       self.new(values[:id]).send(:initialize_from, values, opts)
@@ -50,9 +49,6 @@ module Puffin
     end
 
     def inspect
-      puts 111111111111111111111111111111
-      puts 111111111111111111111111111111
-      puts 111111111111111111111111111111
       id_string = (self.respond_to?(:id) && !self.id.nil?) ? " id=#{self.id}" : ""
       "#<#{self.class}:0x#{self.object_id.to_s(16)}#{id_string}> JSON: " + JSON.pretty_generate(@values)
     end

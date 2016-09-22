@@ -95,9 +95,6 @@ module Puffin
       when Array
         resp.map { |i| convert_to_puffin_object(i, opts) }
       when Hash
-        puts 111111111111111111111111111111
-        puts "a: #{resp[:object]}"
-        puts 111111111111111111111111111111
         object_classes.fetch(resp[:object], PuffinObject).construct_from(resp, opts)
       else
         resp
