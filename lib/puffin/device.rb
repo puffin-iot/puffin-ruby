@@ -1,7 +1,8 @@
 module Puffin
   class Device < APIResource
-    extend Puffin::APIOperations::List
     extend Puffin::APIOperations::Create
-    # include Puffin::APIOperations::Save
+    extend Puffin::APIOperations::List
+    include Puffin::APIOperations::Delete
+    include Puffin::APIOperations::Save
   end
 end

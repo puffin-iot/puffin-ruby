@@ -13,6 +13,7 @@ require 'json'
 
 require 'puffin/api_operations/create'
 require 'puffin/api_operations/save'
+require 'puffin/api_operations/delete'
 require 'puffin/api_operations/list'
 require 'puffin/api_operations/request'
 
@@ -186,9 +187,10 @@ module Puffin
   end
 
   def self.parse(response)
+    ### We sometimes send 204s back from the API when something is deleted
+    ### Perhaps we should change all these to 200s rather than updating the
+    ### entire function and faking an error
     begin
-      # Would use :symbolize_names => true, but apparently there is
-      # some library out there that makes symbolize_names not work.
       response = JSON.parse(response.body)
     rescue JSON::ParserError
       raise general_api_error(response.code, response.body)

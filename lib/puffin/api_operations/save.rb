@@ -3,20 +3,13 @@ module Puffin
     module Save
       module ClassMethods
         # Updates an API resource
-        #
-        # Updates the identified resource with the passed in parameters.
-        #
-        # ==== Attributes
-        #
         # * +id+ - ID of the resource to update.
         # * +params+ - A hash of parameters to pass to the API
-        # * +opts+ - A Hash of additional options (separate from the params /
-        #   object values) to be added to the request. E.g. to allow for an
-        #   idempotency_key to be passed in the request headers, or for the
-        #   api_key to be overwritten. See {APIOperations::Request.request}.
+
+        # Changed from post to patch
         def update(id, params={}, opts={})
-          response, opts = request(:post, "#{resource_url}/#{id}", params, opts)
-          Util.convert_to_stripe_object(response, opts)
+          response, opts = request(:patch, "#{resource_url}/#{id}", params, opts)
+          Util.convert_to_puffin_object(response, opts)
         end
       end
 
