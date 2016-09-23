@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+require 'irb'
+require 'irb/completion'
+
+require "#{File.dirname(__FILE__)}/../lib/puffin"
+
+IRB.conf[:PROMPT_MODE] = :SIMPLE
+IRB.conf[:AUTO_INDENT] = true
+
+puts "Puffin away!"
+
+IRB.start
