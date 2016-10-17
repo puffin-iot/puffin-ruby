@@ -31,9 +31,9 @@ require 'puffin/errors/connection_error'
 require 'puffin/errors/api_error'
 
 module Puffin
+  @api_base = ENV['API_HOST'] || 'https://api.puffin.ly'
+  puts "Setting API Base to #{@api_base}"
 
-  @api_base = 'https://e83789d7.ngrok.io'
-  # @api_base = 'https://api.puffin.ly'
   @max_network_retries = 10
   @verify_ssl_certs = true
   @open_timeout = 30
@@ -60,7 +60,8 @@ module Puffin
 
   class << self
     attr_accessor :puffin_account, :verify_ssl_certs, :api_token,
-                  :open_timeout, :read_timeout, :puffin_env, :api_base
+                  :open_timeout, :read_timeout, :puffin_env, :api_base,
+                  :puffin_host
   end
 
   def self.api_url(url='', api_base_url=nil)
