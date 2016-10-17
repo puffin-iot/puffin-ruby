@@ -317,7 +317,7 @@ module Puffin
     when SocketError
       message = "Unexpected error communicating when trying to connect to Puffin. " \
         "You may be seeing this message because your DNS is not working. " \
-        "To check, try running 'host stripe.com' from the command line."
+        "To check, try running 'host api.puffin.ly' from the command line."
 
     else
       message = "Unexpected error communicating with Puffin. " \
