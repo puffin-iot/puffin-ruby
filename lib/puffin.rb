@@ -31,7 +31,7 @@ require 'puffin/errors/connection_error'
 require 'puffin/errors/api_error'
 
 module Puffin
-  # @api_base = ENV['PUFFIN_HOST'] || 'https://api.puffin.ly'
+  @api_base = ENV['PUFFIN_HOST'] || 'https://api.puffin.ly'
   # puts "Setting Puffin API Base to #{@api_base}"
 
   @max_network_retries = 10
