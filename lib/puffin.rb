@@ -31,8 +31,8 @@ require 'puffin/errors/connection_error'
 require 'puffin/errors/api_error'
 
 module Puffin
-  @api_base = ENV['PUFFIN_HOST'] || 'https://api.puffin.ly'
-  puts "Setting Puffin API Base to #{@api_base}"
+  # @api_base = ENV['PUFFIN_HOST'] || 'https://api.puffin.ly'
+  # puts "Setting Puffin API Base to #{@api_base}"
 
   @max_network_retries = 10
   @verify_ssl_certs = true
@@ -61,15 +61,22 @@ module Puffin
   class << self
     attr_accessor :puffin_account, :verify_ssl_certs, :api_token,
                   :open_timeout, :read_timeout, :puffin_env, :api_base,
-                  :puffin_host
+                  :api_host
   end
 
   def self.api_url(url='', api_base_url=nil)
-    (api_base_url || @api_base) + url
+
+    unless api_host
+      raise AuthenticationError.new('No API URL provided. ' \
+        'Set your API URL using "Puffin.api_host = [YOUR-URL]". ' \
+        'double check the docs :- docs.puffin.ly')
+    end
+
+    (api_host || @api_base) + url
   end
 
   def self.request(method, url, api_token, params={}, headers={}, api_base_url=nil)
-    api_base_url = api_base_url || @api_base
+    api_base_url = api_host || @api_base
 
     unless api_token ||= @api_token
       raise AuthenticationError.new('No API key provided. ' \
