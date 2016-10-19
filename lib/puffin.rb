@@ -31,9 +31,7 @@ require 'puffin/errors/connection_error'
 require 'puffin/errors/api_error'
 
 module Puffin
-
-  @api_base = 'http://127.0.0.1:3000'
-  # @api_base = 'https://api.puffin.ly'
+  @api_base = ENV['PUFFIN_HOST'] || 'https://api.puffin.ly'
   @max_network_retries = 10
   @verify_ssl_certs = true
   @open_timeout = 30
@@ -60,15 +58,23 @@ module Puffin
 
   class << self
     attr_accessor :puffin_account, :verify_ssl_certs, :api_token,
-                  :open_timeout, :read_timeout, :puffin_env, :api_base
+                  :open_timeout, :read_timeout, :puffin_env, :api_base,
+                  :api_host
   end
 
   def self.api_url(url='', api_base_url=nil)
-    (api_base_url || @api_base) + url
+
+    unless api_host
+      raise AuthenticationError.new('No API URL provided. ' \
+        'Set your API URL using "Puffin.api_host = [YOUR-URL]". ' \
+        'double check the docs :- docs.puffin.ly')
+    end
+
+    (api_host || @api_base) + url
   end
 
   def self.request(method, url, api_token, params={}, headers={}, api_base_url=nil)
-    api_base_url = api_base_url || @api_base
+    api_base_url = api_host || @api_base
 
     unless api_token ||= @api_token
       raise AuthenticationError.new('No API key provided. ' \
@@ -316,7 +322,7 @@ module Puffin
     when SocketError
       message = "Unexpected error communicating when trying to connect to Puffin. " \
         "You may be seeing this message because your DNS is not working. " \
-        "To check, try running 'host stripe.com' from the command line."
+        "To check, try running 'host api.puffin.ly' from the command line."
 
     else
       message = "Unexpected error communicating with Puffin. " \
