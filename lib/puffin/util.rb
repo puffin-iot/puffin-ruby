@@ -111,7 +111,8 @@ module Puffin
         'list' => ListObject,
         'device' => Device,
         'operation' => Operation,
-        'message' => Message
+        'message' => Message,
+        'network' => Network
       }
     end
   end

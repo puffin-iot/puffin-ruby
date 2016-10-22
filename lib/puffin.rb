@@ -23,6 +23,7 @@ require 'puffin/api_resource'
 require 'puffin/device'
 require 'puffin/operation'
 require 'puffin/message'
+require 'puffin/network'
 require 'puffin/version'
 require 'puffin/util'
 
