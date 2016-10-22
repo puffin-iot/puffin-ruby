@@ -22,6 +22,7 @@ require 'puffin/list_object'
 require 'puffin/api_resource'
 require 'puffin/device'
 require 'puffin/operation'
+require 'puffin/message'
 require 'puffin/version'
 require 'puffin/util'
 
@@ -32,7 +33,6 @@ require 'puffin/errors/api_error'
 
 module Puffin
   @api_base = ENV['PUFFIN_HOST'] || 'https://api.puffin.ly'
-  # puts "Setting Puffin API Base to #{@api_base}"
 
   @max_network_retries = 10
   @verify_ssl_certs = true
@@ -66,7 +66,7 @@ module Puffin
 
   def self.api_url(url='', api_base_url=nil)
 
-    unless api_host
+    unless api_host || @api_base
       raise AuthenticationError.new('No API URL provided. ' \
         'Set your API URL using "Puffin.api_host = [YOUR-URL]". ' \
         'double check the docs :- docs.puffin.ly')

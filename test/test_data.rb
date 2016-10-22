@@ -72,5 +72,22 @@ module Puffin
         :resource_url => '/v1/operations'
       }
     end
+
+    def make_message(params={})
+      id = params[:id] || '123'
+      {
+        id: id,
+        object: 'message',
+        msg: 'DONE'
+      }.merge(params)
+    end
+
+    def make_messages_array
+      {
+        :data => [make_message, make_message],
+        :object => 'message',
+        :resource_url => '/v1/messages'
+      }
+    end
   end
 end

@@ -7,9 +7,7 @@ module Puffin
 
     def reset(params = {}, opts = {})
       response, opts = request(:post, reset_url, params, opts)
-      puts response
-
-      # initialize_from(response, opts)
+      initialize_from(response, opts)
     end
 
     private
