@@ -108,6 +108,7 @@ module Puffin
 
     def self.object_classes
       @object_classes ||= {
+        'action' => Action,
         'list' => ListObject,
         'device' => Device,
         'operation' => Operation,
