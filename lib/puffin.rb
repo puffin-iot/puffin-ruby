@@ -22,6 +22,9 @@ require 'puffin/list_object'
 require 'puffin/api_resource'
 require 'puffin/device'
 require 'puffin/operation'
+require 'puffin/message'
+require 'puffin/network'
+require 'puffin/action'
 require 'puffin/version'
 require 'puffin/util'
 
@@ -64,7 +67,7 @@ module Puffin
 
   def self.api_url(url='', api_base_url=nil)
 
-    unless api_host
+    unless api_host || @api_base
       raise AuthenticationError.new('No API URL provided. ' \
         'Set your API URL using "Puffin.api_host = [YOUR-URL]". ' \
         'double check the docs :- docs.puffin.ly')

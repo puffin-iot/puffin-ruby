@@ -17,4 +17,3 @@ module Puffin
     end
   end
 end
-

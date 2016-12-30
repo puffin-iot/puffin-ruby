@@ -56,6 +56,23 @@ module Puffin
       }
     end
 
+    def make_network(params={})
+      id = params[:id] || '123'
+      {
+        id: id,
+        object: 'network',
+        status: 'DONE'
+      }.merge(params)
+    end
+
+    def make_network_array
+      {
+        :data => [make_network, make_network],
+        :object => 'network',
+        :resource_url => '/v1/networks'
+      }
+    end
+
     def make_operation(params={})
       id = params[:id] || '123'
       {
@@ -70,6 +87,23 @@ module Puffin
         :data => [make_operation, make_operation],
         :object => 'operation',
         :resource_url => '/v1/operations'
+      }
+    end
+
+    def make_message(params={})
+      id = params[:id] || '123'
+      {
+        id: id,
+        object: 'message',
+        msg: 'DONE'
+      }.merge(params)
+    end
+
+    def make_messages_array
+      {
+        :data => [make_message, make_message],
+        :object => 'message',
+        :resource_url => '/v1/messages'
       }
     end
   end
