@@ -26,6 +26,7 @@ require 'puffin/message'
 require 'puffin/network'
 require 'puffin/action'
 require 'puffin/version'
+require 'puffin/action'
 require 'puffin/util'
 
 require 'puffin/errors/puffin_error'

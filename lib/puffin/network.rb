@@ -6,4 +6,3 @@ module Puffin
     include Puffin::APIOperations::Save
   end
 end
-
