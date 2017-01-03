@@ -44,7 +44,7 @@ module Puffin
         # generated a uri for this object with an identifier baked in
         values.delete(:id)
 
-        response, opts = request(:post, save_url, values, opts)
+        response, opts = request(:patch, save_url, values, opts)
         initialize_from(response, opts)
 
         self
